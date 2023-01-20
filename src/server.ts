@@ -12,6 +12,10 @@ export interface GraphQLContext {
 async function startServer(container: Container) {
   const app = express();
 
+  app.get("/", (req, res) => {
+    res.send("Hello World!");
+  });
+
   const httpServer = http.createServer(app);
 
   await new Promise<void>((resolve) =>

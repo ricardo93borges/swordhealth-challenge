@@ -12,11 +12,11 @@ export interface Container {
   userService: UserService;
 }
 
-const taskRepository = new TaskRepository(Task);
-const userRepository = new UserRepository(User);
+const taskRepository = new TaskRepository();
+const userRepository = new UserRepository();
 
-const userService = new UserService(taskRepository);
-const taskService = new TaskService(userRepository, userService);
+const userService = new UserService();
+const taskService = new TaskService();
 
 const container = {
   userService,
