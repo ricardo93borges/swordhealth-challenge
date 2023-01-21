@@ -1,20 +1,32 @@
-import express from "express";
+import express, { Express } from "express";
 import http from "http";
 import cors from "cors";
 import bodyParser from "body-parser";
-import { Container } from "./container";
 import config from "./config";
+import { Container } from "./container";
+import TaskRouter from "./routers/task.router";
+import UserRouter from "./routers/user.router";
+import AuthRouter from "./routers/auth.router";
 
-export interface GraphQLContext {
-  container: Container;
+function setRouters(app: Express, container: Container) {
+  const taskRouter = new TaskRouter(container);
+  const userRouter = new UserRouter(container);
+  const authRouter = new AuthRouter(container);
+
+  app.use("/user", userRouter.getRouter());
+  app.use("/task", taskRouter.getRouter());
+  app.use("/auth", authRouter.getRouter());
+
+  return app;
 }
 
 async function startServer(container: Container) {
-  const app = express();
+  let app = express();
 
-  app.get("/", (req, res) => {
-    res.send("Hello World!");
-  });
+  app.use(bodyParser.urlencoded({ extended: true }));
+  app.use(bodyParser.json());
+
+  app = setRouters(app, container);
 
   const httpServer = http.createServer(app);
 

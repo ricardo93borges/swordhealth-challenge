@@ -1,9 +1,13 @@
 import startServer from "./server";
-import container from "./container";
-import { connectDatabase } from "./database";
+import { initializeContainer } from "./container";
+import { Database } from "./database";
 
 async function run() {
-  await connectDatabase();
+  const database = new Database();
+  await database.connect();
+
+  const container = initializeContainer(database.getDataSource());
+
   startServer(container);
 }
 
