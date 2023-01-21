@@ -25,4 +25,25 @@ export class TaskService {
     }
     return tasks;
   }
+
+  async update(
+    user: User,
+    id: string,
+    updateTaskDTO: Partial<Task>
+  ): Promise<Task | null> {
+    const { summary, status, date } = updateTaskDTO;
+
+    if (user.role === Role.MANAGER) {
+      await this.taskRespository.update({ id: id }, { summary, status, date });
+    } else if (user.role === Role.TECHNICIAN) {
+      await this.taskRespository.updateWithUser(id, user.id, {
+        summary,
+        status,
+        date,
+      });
+    }
+
+    const task = await this.taskRespository.findOne({ where: { id } });
+    return task;
+  }
 }

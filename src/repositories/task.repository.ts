@@ -2,9 +2,11 @@ import { DataSource, Repository } from "typeorm";
 import { Task } from "../models/task";
 
 export class TaskRepository {
+  private dataSource: DataSource;
   private repository: Repository<Task>;
 
   constructor(dataSource: DataSource) {
+    this.dataSource = dataSource;
     this.repository = dataSource.getRepository(Task);
   }
 
@@ -16,5 +18,27 @@ export class TaskRepository {
   async find(options?: object): Promise<Task[]> {
     const tasks = await this.repository.find(options);
     return tasks;
+  }
+
+  async findOne(options: object): Promise<Task | null> {
+    const task = await this.repository.findOne(options);
+    return task;
+  }
+
+  async update(criteria: object, data: object): Promise<void> {
+    await this.repository.update(criteria, data);
+  }
+
+  async updateWithUser(
+    id: string,
+    userId: number,
+    data: object
+  ): Promise<void> {
+    await this.dataSource
+      .createQueryBuilder()
+      .update(Task)
+      .set(data)
+      .where("id = :id AND user.id = :userId", { id, userId })
+      .execute();
   }
 }

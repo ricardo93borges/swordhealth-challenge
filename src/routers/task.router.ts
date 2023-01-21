@@ -19,7 +19,7 @@ export default class TaskRouter {
     this.router.get("/", auth(this.container), this.taskController.get);
     this.router.get("/:id", auth(this.container), this.taskController.getById);
     this.router.post("/", auth(this.container), this.taskController.add);
-    this.router.put("/", auth(this.container), this.taskController.update);
+    this.router.put("/:id", auth(this.container), this.taskController.update);
 
     return this.router;
   }
