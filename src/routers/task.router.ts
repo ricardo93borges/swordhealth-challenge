@@ -16,10 +16,10 @@ export default class TaskRouter {
   }
 
   getRouter() {
-    this.router.get("/", this.taskController.get);
-    this.router.get("/:id", this.taskController.getById);
+    this.router.get("/", auth(this.container), this.taskController.get);
+    this.router.get("/:id", auth(this.container), this.taskController.getById);
     this.router.post("/", auth(this.container), this.taskController.add);
-    this.router.put("/", this.taskController.update);
+    this.router.put("/", auth(this.container), this.taskController.update);
 
     return this.router;
   }

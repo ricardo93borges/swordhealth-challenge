@@ -1,4 +1,6 @@
 import { Request, Response } from "express";
+import { Role } from "../models/user";
+import { ErrorCode } from "../utils/error-codes";
 import { TaskService } from "../services/task.service";
 
 export class TaskController {
@@ -8,9 +10,12 @@ export class TaskController {
     this.taskService = taskService;
   }
 
-  async get(req: Request, res: Response) {
-    res.send("task");
-  }
+  get = async (req: Request, res: Response) => {
+    const user = JSON.parse(req.headers.user as string);
+
+    const tasks = await this.taskService.get(user);
+    res.send(tasks);
+  };
 
   async getById(req: Request, res: Response) {
     res.send("task id");

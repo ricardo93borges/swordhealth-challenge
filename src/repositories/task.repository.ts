@@ -12,4 +12,9 @@ export class TaskRepository {
     const task = await this.repository.save(addTaskDTO);
     return task;
   }
+
+  async find(options?: object): Promise<Task[]> {
+    const tasks = await this.repository.find(options);
+    return tasks;
+  }
 }
