@@ -22,4 +22,9 @@ export class UserService {
     const user = await this.userRespository.findOne({ where: { email } });
     return user;
   }
+
+  async get(): Promise<User[]> {
+    const users = await this.userRespository.find();
+    return users;
+  }
 }

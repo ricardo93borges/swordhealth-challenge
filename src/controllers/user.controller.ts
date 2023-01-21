@@ -8,9 +8,10 @@ export class UserController {
     this.userService = userService;
   }
 
-  async get(req: Request, res: Response) {
-    res.send("users");
-  }
+  get = async (req: Request, res: Response) => {
+    const users = await this.userService.get();
+    res.send(users);
+  };
 
   add = async (req: Request, res: Response): Promise<void> => {
     const { name, email, password, role } = req.body;

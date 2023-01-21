@@ -13,6 +13,11 @@ export class UserRepository {
     return user;
   }
 
+  async find(options?: object): Promise<User[]> {
+    const users = await this.repository.find(options);
+    return users;
+  }
+
   async findOne(options: object): Promise<User | null> {
     const user = await this.repository.findOne(options);
     return user;
