@@ -16,6 +16,13 @@ const config = {
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
   },
+  amqp: {
+    host: process.env.AMQP_HOST,
+    port: process.env.AMQP_PORT ? parseInt(process.env.AMQP_PORT, 10) : 5672,
+    queues: {
+      finishedTasks: process.env.AMQP_FINISHED_TASKS_QUEUE,
+    },
+  },
 };
 
 export default config;

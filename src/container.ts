@@ -1,8 +1,5 @@
-import jwt from "jsonwebtoken";
 import { DataSource } from "typeorm";
-import config from "./config";
-import { User } from "./models/user";
-import { Task } from "./models/task";
+import { AMQP } from "./amqp/amqp";
 import { TaskRepository } from "./repositories/task.repository";
 import { UserRepository } from "./repositories/user.repository";
 import { AuthService } from "./services/auth.service";
@@ -21,14 +18,14 @@ export interface Container {
   userController: UserController;
 }
 
-export function initializeContainer(dataSource: DataSource) {
+export function initializeContainer(dataSource: DataSource, amqp: AMQP) {
   const taskRepository = new TaskRepository(dataSource);
   const userRepository = new UserRepository(dataSource);
 
   const authService = new AuthService();
   const userService = new UserService(userRepository, authService);
   authService.setUserService(userService);
-  const taskService = new TaskService(taskRepository);
+  const taskService = new TaskService(taskRepository, amqp);
 
   const authController = new AuthController(authService);
   const userController = new UserController(userService);

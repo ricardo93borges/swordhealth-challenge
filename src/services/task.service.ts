@@ -1,12 +1,16 @@
+import config from "../config";
+import { AMQP } from "../amqp/amqp";
 import { Role, User } from "../models/user";
-import { Task } from "../models/task";
+import { Status, Task } from "../models/task";
 import { TaskRepository } from "../repositories/task.repository";
 
 export class TaskService {
   private taskRespository: TaskRepository;
+  private amqp: AMQP;
 
-  constructor(taskRespository: TaskRepository) {
+  constructor(taskRespository: TaskRepository, amqp: AMQP) {
     this.taskRespository = taskRespository;
+    this.amqp = amqp;
   }
 
   async add(addTaskDTO: Partial<Task>): Promise<Task> {
@@ -43,7 +47,15 @@ export class TaskService {
       });
     }
 
-    const task = await this.taskRespository.findOne({ where: { id } });
+    const task = await this.taskRespository.findOne({
+      relations: { user: true },
+      where: { id },
+    });
+
+    if (task && status === Status.FINISHED) {
+      await this.amqp.send(config.amqp.queues.finishedTasks!, task);
+    }
+
     return task;
   }
 }
