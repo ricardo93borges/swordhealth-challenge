@@ -36,26 +36,53 @@ export class TaskService {
     updateTaskDTO: Partial<Task>
   ): Promise<Task | null> {
     const { summary, status, date } = updateTaskDTO;
+    let updated;
+    let options;
 
     if (user.role === Role.MANAGER) {
-      await this.taskRespository.update({ id: id }, { summary, status, date });
+      options = {
+        where: { id },
+      };
+    } else {
+      options = {
+        where: {
+          id,
+          "user.id": user.id,
+        },
+      };
+    }
+
+    const task = await this.taskRespository.findOne(options);
+
+    if (!task) return null;
+
+    if (user.role === Role.MANAGER) {
+      updated = await this.taskRespository.update(
+        { id: id },
+        { summary, status, date }
+      );
     } else if (user.role === Role.TECHNICIAN) {
-      await this.taskRespository.updateWithUser(id, user.id, {
+      updated = await this.taskRespository.updateWithUser(id, user.id, {
         summary,
         status,
         date,
       });
     }
 
-    const task = await this.taskRespository.findOne({
+    const updatedTask = await this.taskRespository.findOne({
       relations: { user: true },
       where: { id },
     });
 
-    if (task && status === Status.FINISHED) {
-      await this.amqp.send(config.amqp.queues.finishedTasks!, task);
+    if (
+      updated &&
+      updated > 0 &&
+      task.status !== Status.FINISHED &&
+      status === Status.FINISHED
+    ) {
+      await this.amqp.send(config.amqp.queues.finishedTasks!, updatedTask!);
     }
 
-    return task;
+    return updatedTask;
   }
 }

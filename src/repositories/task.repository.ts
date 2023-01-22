@@ -25,20 +25,23 @@ export class TaskRepository {
     return task;
   }
 
-  async update(criteria: object, data: object): Promise<void> {
-    await this.repository.update(criteria, data);
+  async update(criteria: object, data: object): Promise<number | undefined> {
+    const result = await this.repository.update(criteria, data);
+    return result.affected;
   }
 
   async updateWithUser(
     id: string,
     userId: number,
     data: object
-  ): Promise<void> {
-    await this.dataSource
+  ): Promise<number | undefined> {
+    const result = await this.dataSource
       .createQueryBuilder()
       .update(Task)
       .set(data)
       .where("id = :id AND user.id = :userId", { id, userId })
       .execute();
+
+    return result.affected;
   }
 }
