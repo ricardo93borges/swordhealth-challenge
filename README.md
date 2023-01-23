@@ -26,6 +26,8 @@
 
 ## Demo
 
+[https://www.youtube.com/watch?v=zmQEgYacR1I](https://www.youtube.com/watch?v=zmQEgYacR1I)
+
 ## Note
 
 There only one consumer that prints the cosumed messages, to see them check the appication container (`swordhealth-challenge_app`) logs (`docker logs -f <container ID>`)
